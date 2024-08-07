@@ -6,47 +6,66 @@ export default function Home() {
 
   const urlApi = "https://countriesnow.space/api/v0.1/countries/flag/images";
   const [banderaSeleccionada, setbanderaSeleccionada] = useState(null);
+  const [paises, setPaises] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [inputValue, setInputValue] = useState('');
   const [formData, setFormData] = useState({
     "respuesta": '',
-});
-  useEffect(() => {
-    fetch(urlApi)
+  });
+  
+  const fetchData = async () => {
+    await fetch(urlApi)
       .then(response => response.json())
       .then(data => {
-        if(Array.isArray(data.data)) 
-        {
-          const paisSeleccionado = data.data[Math.random() * data.data.length];
-          setbanderaSeleccionada(paisSeleccionado);
-        }
-        else {
-          console.error("Data no es un array")
-        }
+        setPaises(data.data)
       })
       .catch(error => console.log('error: ' + error))
-  })
+  }
 
-  const handleChange = (e) => {
-    setFormData({
-        ...formData,
-        [e.target.name]: e.target.value
-    });
+  useEffect(() => {fetchData();}, [])
+  useEffect(() => {
+    if(paises.length > 0){
+      setLoading(false)
+    }
+  },[paises]) 
+  useEffect(() => {
+    if(!loading){
+      drawRandom()
+    }
+  }, [loading])
+  
+  const drawRandom = () => {
+    const pais = paises[Math.floor(Math.random() * paises.length)];
+    setbanderaSeleccionada(pais);
+    
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    processInputValue(inputValue);
+    setInputValue("")
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setFormData({
-        "respuesta": ""
-      });
-    };
-
-  //const revisarPais = ()
+  const processInputValue = (value) => {
+    console.log('Valor ingresado:', value);
+  };
   
   return (
     <>
-      <form onSubmit={handleSubmit} style={{ backgroundColor: '#fff', borderRadius: '10px', padding: '20px', width: '300px', margin: '0 auto', textAlign: 'left' }}>
-        <input type="text" name="respuestaIngresada" value={formData.respuesta} onChange={handleChange} placeholder="pais" />
-        <button type="submit" style={{ backgroundColor: '#00bfff', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px', cursor: 'pointer', fontSize: '16px' }}>Enviar respuesta</button>
-      </form>
+      <div style={{display:"flex", flexDirection:"column", alignItems:"center"}}>
+        {banderaSeleccionada !== null && <Image src={banderaSeleccionada.flag} width={300} height={200}></Image>}
+        <form onSubmit={handleSubmit} style={{height: "100%", backgroundColor: '#fff', borderRadius: '10px', padding: '20px', width: '300px', margin: '0 auto', display:"flex", flexDirection:"column", alignItems:"center"}}>
+          <label>
+            Ingresa algo:
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+            />
+          </label>
+          <button type="submit">Enviar</button>
+        </form>
+      </div>
     </>
   );
 }

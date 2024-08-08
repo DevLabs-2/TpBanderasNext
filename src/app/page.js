@@ -1,7 +1,8 @@
 "use client"
 import Image from "next/image";
 import styles from "../app/styles/page.module.css";
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
+import hintImg from "../../public/hint.png"
 export default function Home() {
 
   const urlApi = "https://countriesnow.space/api/v0.1/countries/flag/images";
@@ -10,19 +11,31 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [inputValue, setInputValue] = useState('');
   const [puntaje, setPuntaje] = useState(0);
-  const [timer, setTimer] = useState(0);
-
+  const [showHint, setShowHint] = useState(false);
+  const [hint, setHint] = useState('');
   //timer
+  
+  const [time, setTime] = useState(0); 
+  const intervalRef = useRef(null); 
+  const startTimeRef = useRef(0); 
+
+  const startStopwatch = () => { 
+      startTimeRef.current = Date.now() - time * 100; 
+      intervalRef.current = setInterval(() => { 
+          setTime(Math.floor((Date.now() - startTimeRef.current) / 1000)); 
+      }, 1000); 
+  }; 
+
+  const resetStopwatch = () => { 
+      clearInterval(intervalRef.current); 
+      setTime(0); 
+  }; 
+
   useEffect(() => {
-    if (!loading && timer > 0) {
-        const interval = setInterval(() => {
-            setTimer(timer - 1);
-        }, 1000);
-        return () => clearInterval(interval);
-    } else if (timer === 0) {
-        processInputValue(false); 
+    if(time >= 15){
+      processInputValue(false);
     }
-}, [loading]);
+  },[time])
 
   //fetch
   const fetchData = async () => {
@@ -50,9 +63,11 @@ export default function Home() {
   const drawRandom = () => {
     const pais = paises[Math.floor(Math.random() * paises.length)];
     setbanderaSeleccionada(pais);
-    
+    startStopwatch();
+    setShowHint(false);
   }
 
+  //logica del juego
   const handleSubmit = (event) => {
     event.preventDefault();
     processInputValue(inputValue);
@@ -72,7 +87,6 @@ export default function Home() {
     else{
       setPuntaje(puntaje - 1)
     }
-    setTimer(0);
     drawRandom();
   };
   
@@ -80,36 +94,52 @@ export default function Home() {
     console.log(puntaje)
   }, [puntaje])
 
-  const paragraphStyle = {
-    fontFamily: "'Arial', sans-serif",
-    fontSize: '18px',
-    fontWeight: 'bold',
-    color: '#ffffff',
-    background: 'linear-gradient(45deg, #1e90ff, #ff6347)',
-    padding: '10px 20px',
-    borderRadius: '15px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-    textAlign: 'center',
-    margin: '20px auto',
-    width: 'fit-content',
-  };
+  //pistas
+
+  const blockString = (str) => {
+    var returnStr = hint;
+    if(!showHint){
+      const numberOfBlockedChars = Math.floor(str.length * 0.6);
+      var result = str.split('');
+      for (let index = 0; index <= numberOfBlockedChars; index++) {
+        let indexOfBlocked = Math.floor(Math.random() * str.length)
+        if(result[indexOfBlocked] !== " "){
+          result[indexOfBlocked] = "#";
+        }
+        else{
+          index--;
+        }
+      }
+      returnStr = result.join('');
+    }
+    return returnStr;
+  }
+
+  const handleHint = () => {
+    setHint(blockString(banderaSeleccionada.name));
+    setShowHint(true);
+  }
 
   return (
     <>
       <div style={{display:"flex", flexDirection:"column", alignItems:"center"}}>
-        <p style={paragraphStyle}>{puntaje}</p>
+        <p className={styles.styledContainer} style={{width: '4rem', height: '2rem', }}>{puntaje}</p>
+        {showHint && <p>{hint}</p>}
         {banderaSeleccionada !== null && <Image src={banderaSeleccionada.flag} width={300} height={200} objectFit={"fill"} alt="flag" style={{border:"1px solid black"}}></Image>}
         <form onSubmit={handleSubmit} style={{height: "100%", backgroundColor: '#fff', borderRadius: '10px', padding: '20px', width: '300px', margin: '0 auto', display:"flex", flexDirection:"column", alignItems:"center"}}>
-          <label>
-            <p>{timer}s</p>
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-            />
+          <label style={{width:'15rem'}}>
+            <p style={{textAlign: "center"}}>{time}s</p>
+            <div style={{width:'100%', display: 'flex', justifyContent:'space-around'}}>
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+              />
+              <button type="button" className={styles.styledContainer} onClick={handleHint}>❔</button>
+            </div>
           </label>
           <br></br>
-          <button type="submit">Enviar</button>
+          <button type="submit" className={styles.button}>Enviar</button>
         </form>
       </div>
     </>

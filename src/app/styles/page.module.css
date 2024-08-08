@@ -55,6 +55,50 @@
   transition: background 200ms, border 200ms;
 }
 
+.button {
+  display: inline-block;
+  padding: 15px 30px;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #fff;
+  background: linear-gradient(45deg, #ff6b6b, #f7d794);
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+        
+}
+
+.button:hover {
+  background: linear-gradient(45deg, #f7d794, #ff6b6b);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.button:active {
+  background: linear-gradient(45deg, #f7d794, #ff6b6b);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transform: translateY(0);
+}
+
+.styledContainer {
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+  background: linear-gradient(45deg, #f7d794, #ff6b6b);
+  border-radius: 15px;
+  box-shadow:  rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+};
+
 .card span {
   display: inline-block;
   transition: transform 200ms;

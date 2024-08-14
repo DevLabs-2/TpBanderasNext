@@ -122,11 +122,11 @@ export default function Home() {
 
   return (
     <>
-      <div style={{display:"flex", flexDirection:"column", alignItems:"center"}}>
+      <div style={{display:"flex", flexDirection:"column", alignItems:"center", marginTop:"200px"}}>
         <p className={styles.styledContainer} style={{width: '4rem', height: '2rem', }}>{puntaje}</p>
         {showHint && <p>{hint}</p>}
         {banderaSeleccionada !== null && <Image src={banderaSeleccionada.flag} width={300} height={200} objectFit={"fill"} alt="flag" style={{border:"1px solid black"}}></Image>}
-        <form onSubmit={handleSubmit} style={{height: "100%", backgroundColor: '#fff', borderRadius: '10px', padding: '20px', width: '300px', margin: '0 auto', display:"flex", flexDirection:"column", alignItems:"center"}}>
+        <form onSubmit={handleSubmit} style={{height: "100%", backgroundColor: '#fff', borderRadius: '10px', padding: '20px', width: '300px', margin: '0 auto', display:"flex", flexDirection:"column", alignItems:"center", marginTop:"50px"}}>
           <label style={{width:'15rem'}}>
             <p style={{textAlign: "center"}}>{time}s</p>
             <div style={{width:'100%', display: 'flex', justifyContent:'space-around'}}>
